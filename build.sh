@@ -12,7 +12,7 @@ TOOLCHAIN=$ORIGIN_DIR/build-shit
 IMAGE=$ORIGIN_DIR/out/arch/arm64/boot/Image.gz
 DEVICE=hanoip
 CONFIG="${DEVICE}_defconfig"
-FP_MODEL="$*"
+# FP_MODEL="$*"
 CPO+=(
     ./scripts/config \
         --file "$ORIGIN_DIR"/out/.config \
@@ -81,11 +81,12 @@ build_kernel_image() {
     cleanup
     script_echo " "
     echo -e "${GRN}"
+    read -p "Write the fingerprint Model [CPO/default:FPC]: " FP_MODEL
     read -p "Write the Kernel version: " KV
     echo -e "${YELLOW}"
     script_echo "Building CosmicFresh Kernel For $DEVICE"
 
-    make "${MAKE[@]}" LOCALVERSION="—CosmicFresh-R$KV" $CONFIG 2>&1 | sed 's/^/     /'
+    make "${MAKE[@]}" LOCALVERSION="—CosmicFresh⚡-R$KV" $CONFIG 2>&1 | sed 's/^/     /'
 
     echo -e "${GRN}"
     if [ "$FP_MODEL" = "CPO" ]; then
@@ -136,6 +137,9 @@ build_flashable_zip() {
     cd "$ORIGIN_DIR"/CosmicFresh/ || exit
     zip -r9 "CosmicFresh-R$KV-$FP_MODEL.zip" META-INF version anykernel.sh tools Image.gz dtb dtbo.img
     rm -rf {Image.gz,dtb,dtbo.img}
+        script_echo "------------------------------------------------------------"
+	script_echo "Flashable: $(pwd)/CosmicFresh-R$KV-$FP_MODEL.zip"
+        script_echo "------------------------------------------------------------"
     cd ../
 }
 
